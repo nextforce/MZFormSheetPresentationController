@@ -67,6 +67,7 @@ CGFloat const MZFormSheetPresentationControllerDefaultAboveKeyboardMargin = 20;
         [appearance setContentViewSize:CGSizeMake(284.0, 284.0)];
         [appearance setPortraitTopInset:66.0];
         [appearance setLandscapeTopInset:6.0];
+        [appearance setLeftInset:0.0];
         [appearance setShouldCenterHorizontally:YES];
         [appearance setBackgroundColor:[UIColor colorWithWhite:0 alpha:0.5]];
         [appearance setBlurEffectStyle:UIBlurEffectStyleLight];
@@ -508,6 +509,8 @@ CGFloat const MZFormSheetPresentationControllerDefaultAboveKeyboardMargin = 20;
     
     if (self.shouldCenterHorizontally) {
         formSheetRect.origin.x = CGRectGetMidX(self.containerView.bounds) - formSheetRect.size.width/2;
+    } else {
+        formSheetRect.origin.x = self.leftInset;
     }
     
     if (self.keyboardVisible && self.movementActionWhenKeyboardAppears != MZFormSheetActionWhenKeyboardAppearsDoNothing) {
