@@ -71,6 +71,12 @@ typedef NS_ENUM(NSInteger, MZFormSheetActionWhenKeyboardAppears) {
 @property (nonatomic, assign) CGFloat portraitTopInset MZ_APPEARANCE_SELECTOR;
 
 /**
+ Distance that the presented form sheet view is inset from left edge.
+ By default, this is 0.0
+ */
+@property (nonatomic, assign) CGFloat leftInset MZ_APPEARANCE_SELECTOR;
+
+/**
  Returns whether the form sheet controller should dismiss after background view tap.
  By default, this is NO
  */

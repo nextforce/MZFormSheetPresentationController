@@ -64,6 +64,7 @@ CGFloat const MZFormSheetPresentationControllerDefaultAboveKeyboardMargin = 20;
         [appearance setContentViewSize:CGSizeMake(284.0, 284.0)];
         [appearance setPortraitTopInset:66.0];
         [appearance setLandscapeTopInset:6.0];
+        [appearance setLeftInset:0.0];
         [appearance setShouldCenterHorizontally:YES];
         [appearance setBackgroundColor:[UIColor colorWithWhite:0 alpha:0.5]];
         [appearance setBlurEffectStyle:UIBlurEffectStyleLight];
@@ -455,22 +456,41 @@ CGFloat const MZFormSheetPresentationControllerDefaultAboveKeyboardMargin = 20;
 #pragma mark - Frame Configuration
 
 - (CGRect)formSheetViewControllerFrame {
-    MZFormSheetPresentationViewController *presentationViewController = (MZFormSheetPresentationViewController *)self.presentedViewController;
-    
     CGRect formSheetRect = self.presentedView.frame;
     CGSize contentViewSize = self.internalContentViewSize;
-    UIView *contentView = presentationViewController.contentViewController.view;
+
+    BOOL calculateSize = NO;
     
-    if (CGSizeEqualToSize(contentViewSize, UILayoutFittingCompressedSize)) {
-        formSheetRect.size = [contentView systemLayoutSizeFittingSize: contentViewSize];
-    } else if (CGSizeEqualToSize(contentViewSize, UILayoutFittingExpandedSize)) {
-        formSheetRect.size = [contentView systemLayoutSizeFittingSize: self.containerView.bounds.size];
+    if (contentViewSize.width == UILayoutFittingCompressedSize.width) {
+        calculateSize = YES;
+    }
+    
+    if (contentViewSize.width == UILayoutFittingExpandedSize.width) {
+        contentViewSize.width = self.containerView.bounds.size.width - self.leftInset - (self.shouldCenterHorizontally ? self.leftInset : 0);
+        calculateSize = YES;
+    }
+    
+    if (contentViewSize.height == UILayoutFittingCompressedSize.height) {
+        calculateSize = YES;
+    }
+    
+    if (contentViewSize.height == UILayoutFittingExpandedSize.height) {
+        contentViewSize.height = self.containerView.bounds.size.height - self.topInset - (self.shouldCenterVertically ? self.topInset : 0);
+        calculateSize = YES;
+    }
+    
+    if (calculateSize) {
+        MZFormSheetPresentationViewController *presentationViewController = (MZFormSheetPresentationViewController *)self.presentedViewController;
+        UIView *contentView = presentationViewController.contentViewController.view;
+        formSheetRect.size = [contentView systemLayoutSizeFittingSize: contentViewSize withHorizontalFittingPriority:999 verticalFittingPriority:1];
     } else {
         formSheetRect.size = contentViewSize;
     }
     
     if (self.shouldCenterHorizontally) {
         formSheetRect.origin.x = CGRectGetMidX(self.containerView.bounds) - formSheetRect.size.width/2;
+    } else {
+        formSheetRect.origin.x = self.leftInset;
     }
     
     if (self.keyboardVisible && self.movementActionWhenKeyboardAppears != MZFormSheetActionWhenKeyboardAppearsDoNothing) {
@@ -501,7 +521,6 @@ CGFloat const MZFormSheetPresentationControllerDefaultAboveKeyboardMargin = 20;
             }
             
         }
-        
     } else if (self.shouldCenterVertically) {
         formSheetRect.origin.y = CGRectGetMidY(self.containerView.bounds) - formSheetRect.size.height/2;
     } else {
